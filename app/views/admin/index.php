@@ -26,7 +26,7 @@
     }
     .grid-admin-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 20px;
     }
     .admin-card {
@@ -36,6 +36,9 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         text-align: center;
         transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .admin-card:hover {
         transform: translateY(-5px);
@@ -64,7 +67,7 @@
         font-weight: bold;
     }
     .btn-card:hover {
-        background-color: #d35400;
+        opacity: 0.9;
     }
 </style>
 
@@ -80,27 +83,44 @@
     </div>
 
     <div class="grid-admin-cards">
+        <!-- TARJETA DIRIGIDA AL DASHBOARD DE MÉTRICAS Y ANALÍTICA -->
+        <div class="admin-card">
+            <div>
+                <div class="admin-card-icon">📈</div>
+                <h3>Dashboard de Ventas</h3>
+                <p>Consulta métricas de ingresos, reporte de visitas, tasa de conversión y gráficos de rendimiento.</p>
+            </div>
+            <!-- RUTA ACTUALIZADA A /admin/dashboard -->
+            <a href="/proyecto_tejas/public/admin/dashboard" class="btn-card" style="background-color: #8e44ad;">Ver Estadísticas</a>
+        </div>
+
         <!-- Tarjeta de Inventario / Gestión de Productos -->
         <div class="admin-card">
-            <div class="admin-card-icon">🧱</div>
-            <h3>Gestión de Productos</h3>
-            <p>Visualiza el inventario completo, modifica precios, actualiza stocks o elimina productos.</p>
+            <div>
+                <div class="admin-card-icon">🧱</div>
+                <h3>Gestión de Productos</h3>
+                <p>Visualiza el inventario completo, modifica precios, actualiza stocks o elimina productos.</p>
+            </div>
             <a href="/proyecto_tejas/public/producto/index" class="btn-card">Administrar Productos</a>
         </div>
 
         <!-- Tarjeta de Añadir Producto Rápidamente -->
         <div class="admin-card">
-            <div class="admin-card-icon">➕</div>
-            <h3>Añadir Nuevo Producto</h3>
-            <p>Registra de manera inmediata un nuevo producto especificando SKU, categoría, precio e imagen.</p>
+            <div>
+                <div class="admin-card-icon">➕</div>
+                <h3>Añadir Nuevo Producto</h3>
+                <p>Registra de manera inmediata un nuevo producto especificando SKU, categoría, precio e imagen.</p>
+            </div>
             <a href="/proyecto_tejas/public/producto/crear" class="btn-card" style="background-color: #27ae60;">Crear Producto</a>
         </div>
 
         <!-- Tarjeta de Vista de Catálogo -->
         <div class="admin-card">
-            <div class="admin-card-icon">🏬</div>
-            <h3>Ver Catálogo Público</h3>
-            <p>Accede a la vista del cliente para verificar cómo lucen las tejas y materiales publicados.</p>
+            <div>
+                <div class="admin-card-icon">🏬</div>
+                <h3>Ver Catálogo Público</h3>
+                <p>Accede a la vista del cliente para verificar cómo lucen las tejas y materiales publicados.</p>
+            </div>
             <a href="/proyecto_tejas/public/catalogo/index" class="btn-card" style="background-color: #3498db;">Ir al Catálogo</a>
         </div>
     </div>

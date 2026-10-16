@@ -11,6 +11,13 @@ class Usuario {
         $this->db = Database::getInstance();
     }
 
+    // Método auxiliar para validar la complejidad de la contraseña
+    private function validarPasswordCompleja(string $password): bool {
+        // Mínimo 8 caracteres, al menos una letra minúscula, una mayúscula y un número
+        $regex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/';
+        return (bool) preg_match($regex, $password);
+    }
+
     // Buscar usuario por correo (Login)
     public function obtenerPorEmail(string $email): ?array {
         $sql = "SELECT * FROM usuarios WHERE email = :email LIMIT 1";
@@ -43,8 +50,15 @@ class Usuario {
         return $usuario ?: null;
     }
 
-    // Crear cliente (Admin / Registro)
+    // Crear cliente (Admin / Registro) con validación estricta
     public function crearCliente(array $datos): bool {
+        $password = $datos['password'] ?? '';
+
+        // BLOQUEO: Si no cumple con la expresión regular, se rechaza la inserción
+        if (!$this->validarPasswordCompleja($password)) {
+            return false;
+        }
+
         $sql = "INSERT INTO usuarios (nombre, apellido, email, password, telefono, direccion, rol_id) 
                 VALUES (:nombre, :apellido, :email, :password, :telefono, :direccion, 2)";
         
@@ -53,15 +67,20 @@ class Usuario {
             ':nombre'    => $datos['nombre'],
             ':apellido'  => $datos['apellido'],
             ':email'     => $datos['email'],
-            ':password'  => password_hash($datos['password'], PASSWORD_BCRYPT),
+            ':password'  => password_hash($password, PASSWORD_BCRYPT),
             ':telefono'  => $datos['telefono'] ?? null,
             ':direccion' => $datos['direccion'] ?? null
         ]);
     }
 
-    // Actualizar cliente
+    // Actualizar cliente con validación condicional de clave
     public function actualizarCliente(int $id, array $datos): bool {
         if (!empty($datos['password'])) {
+            // BLOQUEO: Si intenta cambiar la contraseña por una débil, se rechaza
+            if (!$this->validarPasswordCompleja($datos['password'])) {
+                return false;
+            }
+
             $sql = "UPDATE usuarios 
                     SET nombre = :nombre, apellido = :apellido, email = :email, 
                         telefono = :telefono, direccion = :direccion, password = :password 

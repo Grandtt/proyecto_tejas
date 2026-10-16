@@ -14,21 +14,31 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
     <title>Tienda de Tejas y Materiales</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .main-header { background-color: #2c3e50; color: white; padding: 12px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo a { color: #ecf0f1; font-size: 1.4rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .nav-menu { display: flex; list-style: none; gap: 18px; align-items: center; }
-        .nav-menu a { color: #ecf0f1; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; }
-        .nav-menu a:hover { color: #e67e22; }
-        .user-badge { background: #34495e; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem; color: #f1c40f; }
+        .main-header { background-color: #2c3e50; color: white; padding: 12px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 100%; }
         
-        .btn-admin-productos { background-color: #f39c12; color: #2c3e50 !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+        /* Se amplía el max-width a 1400px y se añade flex-wrap y gap para dar suficiente espacio */
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        
+        /* white-space: nowrap impide que los textos dentro de los enlaces o botones se rompan en dos líneas */
+        .logo a { color: #ecf0f1; font-size: 1.4rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        
+        .nav-menu { display: flex; list-style: none; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-menu li { display: flex; align-items: center; }
+        .nav-menu a { color: #ecf0f1; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; white-space: nowrap; display: inline-block; }
+        .nav-menu a:hover { color: #e67e22; }
+        
+        .user-badge { background: #34495e; padding: 6px 12px; border-radius: 15px; font-size: 0.85rem; color: #f1c40f; white-space: nowrap; }
+        
+        .btn-admin-productos { background-color: #f39c12; color: #2c3e50 !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; white-space: nowrap; }
         .btn-admin-productos:hover { background-color: #e67e22; color: white !important; }
 
-        .btn-admin-clientes { background-color: #2980b9; color: white !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+        .btn-admin-clientes { background-color: #2980b9; color: white !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; white-space: nowrap; }
         .btn-admin-clientes:hover { background-color: #3498db; }
         
-        .btn-logout { background-color: #e74c3c; color: white !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+        .btn-admin-proveedores { background-color: #27ae60; color: white !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; white-space: nowrap; }
+        .btn-admin-proveedores:hover { background-color: #2ecc71; }
+
+        .btn-logout { background-color: #e74c3c; color: white !important; padding: 6px 12px; border-radius: 4px; font-weight: bold; white-space: nowrap; }
         .btn-logout:hover { background-color: #c0392b; }
     </style>
 </head>
@@ -52,6 +62,11 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
                     <!-- Botones exclusivos para Administrador -->
                     <?php if ($esAdmin): ?>
                         <li>
+                            <a href="/proyecto_tejas/public/admin/dashboard/index" class="btn btn-dark btn-sm text-white me-2 fw-semibold">
+                                📊 Métricas y Ventas
+                            </a>
+                        </li>
+                        <li>
                             <a href="/proyecto_tejas/public/producto/index" class="btn-admin-productos">
                                 🛠️ Gestionar Productos
                             </a>
@@ -59,6 +74,11 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
                         <li>
                             <a href="/proyecto_tejas/public/cliente/index" class="btn-admin-clientes">
                                 👥 Gestionar Clientes
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyecto_tejas/public/proveedor/index" class="btn-admin-proveedores">
+                                🚚 Gestionar Proveedores
                             </a>
                         </li>
                     <?php endif; ?>
@@ -69,6 +89,7 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
                     <li><a href="/proyecto_tejas/public/auth/login">Iniciar Sesión</a></li>
                     <li><a href="/proyecto_tejas/public/auth/registro">Registrarse</a></li>
                 <?php endif; ?>
+                
             </ul>
         </nav>
     </div>
