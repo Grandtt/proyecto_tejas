@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-09-2026 a las 21:30:57
+-- Tiempo de generación: 17-10-2026 a las 01:44:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,7 +43,8 @@ INSERT INTO `categorias` (`id`, `nombre`, `descripcion`, `imagen`, `creado_en`) 
 (1, 'Tejas de Barro', NULL, NULL, '2026-08-28 19:49:34'),
 (2, 'Tejas Termoacústicas', NULL, NULL, '2026-08-28 19:49:34'),
 (3, 'Tejas de Policarbonato', NULL, NULL, '2026-08-28 19:49:34'),
-(4, 'Tejas de Fibrocemento', NULL, NULL, '2026-08-28 19:49:34');
+(4, 'Tejas de Fibrocemento', NULL, NULL, '2026-08-28 19:49:34'),
+(5, 'Accesorios y Sujeción', NULL, NULL, '2026-09-30 18:59:03');
 
 -- --------------------------------------------------------
 
@@ -106,7 +107,35 @@ CREATE TABLE `productos` (
 
 INSERT INTO `productos` (`id`, `categoria_id`, `sku`, `nombre`, `descripcion`, `precio`, `stock`, `imagen`, `material`, `resistencia`, `dimensiones`, `peso_kg`, `rendimiento_m2`, `estado`, `creado_en`) VALUES
 (11, 3, '00001', 'aserdtfyuhi', 'wae4rtyuio', 100000.00, 100, 'teja_6a91e66f9715a.jpg', '', NULL, NULL, NULL, NULL, 'activo', '2026-08-28 19:50:07'),
-(12, 1, 'P0002', 'Grandett', '30 y 50 cm de largo , 15 y 30 de ancho , resistentes', 250.00, 10000, 'teja_6a98920d646a2.png', '', 'mucha', '2d', 2.00, 1.00, 'activo', '2026-09-02 20:21:20');
+(12, 1, 'P0002', 'Grandett', '30 y 50 cm de largo , 15 y 30 de ancho , resistentes', 250.00, 10000, 'teja_6a98920d646a2.png', '', 'mucha', '2d', 2.00, 1.00, 'activo', '2026-09-02 20:21:20'),
+(53, 1, 'TEJ-FIB-001', 'Teja Ondulada Fibrocemento Perfil 7 (#6 - 1.83m)', 'Teja de fibrocemento tradicional sin asbesto de 1.83m x 0.92m. Ideal para viviendas, bodegas y proyectos rurales. Excelente aislante acústico.', 38500.00, 150, 'teja_6ad2812260943.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(54, 1, 'TEJ-FIB-002', 'Teja Ondulada Fibrocemento Perfil 7 (#8 - 2.44m)', 'Teja estructural de fibrocemento de 2.44m x 0.92m. Alta durabilidad y resistencia al fuego y cambios climáticos.', 48900.00, 120, 'teja_6ad280f495fac.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(55, 2, 'TEJ-ARC-001', 'Teja Española Arcilla Cocida Terracota', 'Teja de barro tradicional tipo colonial elaborada en arcilla cocida de alta calidad. Aporta estética rústica y excelente confort térmico.', 4200.00, 1200, 'teja_6ad280dacacc6.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(56, 2, 'TEJ-CON-001', 'Teja Plana de Concreto Gris Grafito', 'Teja de cemento y alta densidad para arquitectura moderna. Resistente a impactos, granizo y de bajo mantenimiento.', 6500.00, 800, 'teja_6ad280acead41.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(57, 3, 'TEJ-ZIN-001', 'Teja Zinc Ondulada Calibre 30 (3.00m x 0.80m)', 'Lámina metálica de acero galvanizado anticorrosivo. Económica, liviana y de rápida instalación para cubiertas ligeras.', 29500.00, 200, 'teja_6ad2807cee087.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(58, 4, 'TEJ-POL-001', 'Teja Policarbonato Transparente Perfil 7 (1.83m)', 'Teja traslúcida con protección contra rayos UV. Permite el paso de luz natural en patios, garajes e invernaderos.', 41200.00, 90, 'teja_6ad2804faaa1c.webp', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(59, 4, 'TEJ-PVC-001', 'Teja Arquitectónica UPVC Termoacústica (3.05m)', 'Teja multicapa sintética en PVC con aislamiento de sonido y temperatura. No se oxida ni propaga llamas.', 115000.00, 65, 'teja_6abd700a1bb57.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(60, 4, 'TEJ-ASF-001', 'Teja Asfáltica Tipo Shingle Rojo Colonial (M²)', 'Cubierta decorativa liviana e impermeable a base de asfalto y fibra de vidrio. Ideal para techos con pendientes altas.', 45000.00, 300, 'teja_6abd6fea6fa9d.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(61, 5, 'ACC-CAB-001', 'Caballete Articulado Fibrocemento (Par)', 'Complemento indispensable para el remate superior y cierre de cumbreras en tejados de fibrocemento.', 28500.00, 80, 'teja_6abd6fcec6590.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18'),
+(62, 5, 'ACC-GAN-001', 'Ganchos de Sujeción y Amarre para Teja (Paquete x 50)', 'Ganchos metálicos galvanizados con arandela de caucho hermética para fijación en estructuras de madera o perfilería metálica.', 18000.00, 150, 'teja_6abd6fad7dd78.jpg', 'ceramica', '', '', NULL, NULL, 'activo', '2026-09-30 19:02:18');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedores`
+--
+
+CREATE TABLE `proveedores` (
+  `id` int(11) NOT NULL,
+  `nit` varchar(20) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `contacto` varchar(100) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `direccion` text DEFAULT NULL,
+  `estado` enum('activo','inactivo') DEFAULT 'activo',
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -154,11 +183,10 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `role_id`, `nombre`, `apellido`, `email`, `password`, `telefono`, `direccion`, `rol_id`, `tipo_cliente`, `creado_en`) VALUES
-(4, 1, 'Juan Sebastian', 'Martínez grandett', 'grandett999@gmail.com', '$2y$10$dElamlpMAIRmr5.icnAQrOX5hkrhoH9smVT8Bsw.YP02OcA73.OzW', NULL, NULL, 2, 'particular', '2026-08-28 19:06:57'),
-(5, 2, 'Juan Sebastian', 'Martínez grandett', 'Juansgrandett@gmail.com', '$2y$10$1wqyBBsCy.MZG3JL4jbtJebM4/TwNFujktn8BdKl1AbsMtZJcWhw2', NULL, NULL, 2, 'particular', '2026-08-28 20:17:17'),
 (6, 2, 'Cliente', 'Cliente', 'cliente@gmail.com', '$2y$10$p9hBb1tmhXSXJ/TmeeObO.chReUV7Qmt6PUVIO1YKtslLl9aLMOfC', NULL, NULL, 2, 'particular', '2026-09-02 20:24:02'),
 (7, 1, 'admin', 'admin', 'admin@gmail.com', '$2y$10$T.exTQ7sATJ26syKjc1ALeArIOXqWtgxNFF.L39in1FpFogqdggAm', NULL, NULL, 2, 'particular', '2026-09-02 20:57:33'),
-(8, 2, 'nuevo usuario', 'prueba', 'usuario@gmail.com', '$2y$10$sWySsqDgTlKbP5V.Z3YRRuVuO81BY1MgK5rK7/lL3zUuUUUMG4Ay.', NULL, NULL, 2, 'particular', '2026-09-16 19:07:09');
+(8, 2, 'nuevo usuario', 'prueba', 'usuario@gmail.com', '$2y$10$sWySsqDgTlKbP5V.Z3YRRuVuO81BY1MgK5rK7/lL3zUuUUUMG4Ay.', NULL, NULL, 2, 'particular', '2026-09-16 19:07:09'),
+(12, 2, 'Juan Sebastian', 'Grandett', 'juansgrand@gmail.com', '$2y$10$PjViW6RjrsURmVemlE5DQeerhW/ijE3qlN3i6jeu.VD/LXznnpKNa', NULL, NULL, 2, 'particular', '2026-10-16 20:36:42');
 
 --
 -- Índices para tablas volcadas
@@ -195,6 +223,13 @@ ALTER TABLE `productos`
   ADD KEY `fk_productos_categorias` (`categoria_id`);
 
 --
+-- Indices de la tabla `proveedores`
+--
+ALTER TABLE `proveedores`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nit` (`nit`);
+
+--
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -217,7 +252,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_pedidos`
@@ -235,7 +270,13 @@ ALTER TABLE `pedidos`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+
+--
+-- AUTO_INCREMENT de la tabla `proveedores`
+--
+ALTER TABLE `proveedores`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -247,7 +288,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restricciones para tablas volcadas
