@@ -12,12 +12,10 @@ class Pedido {
         $this->db = Database::getInstance();
     }
 
-    // Procesa el pedido usando Transacciones SQL para evitar inconsistencias de stock
     public function registrarPedido(int $usuario_id, array $items, float $total, string $direccion, string $metodo_pago): int|bool {
         try {
             $this->db->beginTransaction();
 
-            // 1. Insertar la cabecera del pedido
             $sqlPedido = "INSERT INTO pedidos (usuario_id, total, direccion_envio, metodo_pago, estado_pedido) 
                           VALUES (:usuario_id, :total, :direccion, :metodo_pago, 'pendiente')";
             
@@ -31,32 +29,44 @@ class Pedido {
 
             $pedido_id = (int)$this->db->lastInsertId();
 
-            // 2. Preparar sentencias para detalle y actualización de stock
+            if ($pedido_id <= 0) {
+                throw new Exception("No se pudo generar el ID del pedido.");
+            }
+
             $sqlDetalle = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, precio_unitario) 
                            VALUES (:pedido_id, :producto_id, :cantidad, :precio_unitario)";
             $stmtDetalle = $this->db->prepare($sqlDetalle);
 
-            $sqlStock = "UPDATE productos SET stock = stock - :cantidad WHERE id = :producto_id AND stock >= :cantidad";
+            // CORRECCIÓN: Usar parámetros únicos (:cant_restar y :cant_validar) para evitar el error HY093
+            $sqlStock = "UPDATE productos SET stock = stock - :cant_restar WHERE id = :producto_id AND stock >= :cant_validar";
             $stmtStock = $this->db->prepare($sqlStock);
 
-            foreach ($items as $item) {
-                // Registrar línea de detalle
+            foreach ($items as $key => $item) {
+                $producto_id = $item['id'] ?? $key;
+                $cantidad = (int)($item['cantidad'] ?? 1);
+                $precio = (float)($item['precio'] ?? 0);
+
+                if ($producto_id <= 0) {
+                    throw new Exception("ID de producto inválido en el carrito.");
+                }
+
+                // Insertar detalle del pedido
                 $stmtDetalle->execute([
                     ':pedido_id'       => $pedido_id,
-                    ':producto_id'     => $item['id'],
-                    ':cantidad'        => $item['cantidad'],
-                    ':precio_unitario' => $item['precio']
+                    ':producto_id'     => $producto_id,
+                    ':cantidad'        => $cantidad,
+                    ':precio_unitario' => $precio
                 ]);
 
-                // Descontar inventario
+                // Descontar stock con parámetros únicos
                 $stmtStock->execute([
-                    ':cantidad'    => $item['cantidad'],
-                    ':producto_id' => $item['id']
+                    ':cant_restar'   => $cantidad,
+                    ':producto_id'   => $producto_id,
+                    ':cant_validar'  => $cantidad
                 ]);
 
-                // Si no se actualizó el stock (ej. stock insuficiente)
                 if ($stmtStock->rowCount() === 0) {
-                    throw new Exception("Stock insuficiente para el producto: " . ($item['nombre'] ?? 'ID ' . $item['id']));
+                    throw new Exception("Stock insuficiente para el producto ID: " . $producto_id);
                 }
             }
 
@@ -66,18 +76,12 @@ class Pedido {
         } catch (Exception $e) {
             $this->db->rollBack();
             error_log("Error en Checkout: " . $e->getMessage());
-            return false;
+            throw $e;
         }
     }
 
-    // Obtener historial de pedidos de un cliente
     public function obtenerPorUsuario(int $usuario_id): array {
-        $sql = "SELECT id, 
-                       total, 
-                       direccion_envio, 
-                       metodo_pago, 
-                       estado_pedido, 
-                       created_at 
+        $sql = "SELECT id, total, direccion_envio, metodo_pago, estado_pedido, created_at 
                 FROM pedidos 
                 WHERE usuario_id = :usuario_id 
                 ORDER BY id DESC";
@@ -87,7 +91,6 @@ class Pedido {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Obtener un pedido con su detalle e información de productos
     public function obtenerDetalle(int $pedido_id): ?array {
         $stmt = $this->db->prepare("
             SELECT p.*, u.nombre, u.apellido, u.email, u.telefono 
@@ -112,7 +115,6 @@ class Pedido {
         return $pedido;
     }
 
-    // Obtener todos los pedidos (Panel Admin)
     public function obtenerTodos(): array {
         $sql = "SELECT p.*, u.nombre, u.apellido 
                 FROM pedidos p 
@@ -121,7 +123,6 @@ class Pedido {
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Actualizar estado logístico (Admin)
     public function cambiarEstado(int $pedido_id, string $nuevo_estado): bool {
         $stmt = $this->db->prepare("UPDATE pedidos SET estado_pedido = :estado WHERE id = :id");
         return $stmt->execute([':estado' => $nuevo_estado, ':id' => $pedido_id]);

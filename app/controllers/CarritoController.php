@@ -1,23 +1,20 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\Producto;
-use App\Middleware\AuthMiddleware;
-
 class CarritoController {
-    private Producto $productoModel;
-
+    
     public function __construct() {
-        AuthMiddleware::initSession();
-        $this->productoModel = new Producto();
-
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         if (!isset($_SESSION['carrito'])) {
             $_SESSION['carrito'] = [];
         }
     }
 
-    // Ver el carrito de compras
-    public function index(): void {
+    // Ruta: /carrito o /carrito/index
+    public function index() {
         $items = $_SESSION['carrito'];
         $total = 0;
 
@@ -25,49 +22,49 @@ class CarritoController {
             $total += $item['precio'] * $item['cantidad'];
         }
 
+        // Carga la vista correctamente desde app/views/carrito/index.php
         require_once __DIR__ . '/../views/carrito/index.php';
     }
 
-    // Agregar producto al carrito
-    public function agregar(): void {
+    // Ruta: /carrito/agregar (por POST)
+    public function agregar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $producto_id = (int)($_POST['producto_id'] ?? 0);
-            $cantidad    = (int)($_POST['cantidad'] ?? 1);
+            $id = $_POST['id_producto'] ?? null;
+            $nombre = $_POST['nombre'] ?? 'Teja sin nombre';
+            $precio = (float)($_POST['precio'] ?? 0);
+            $cantidad = (int)($_POST['cantidad'] ?? 1);
 
-            $producto = $this->productoModel->obtenerPorId($producto_id);
-
-            if ($producto && $cantidad > 0) {
-                if (isset($_SESSION['carrito'][$producto_id])) {
-                    $_SESSION['carrito'][$producto_id]['cantidad'] += $cantidad;
+            if ($id && $cantidad > 0) {
+                if (isset($_SESSION['carrito'][$id])) {
+                    $_SESSION['carrito'][$id]['cantidad'] += $cantidad;
                 } else {
-                    $_SESSION['carrito'][$producto_id] = [
-                        'id'         => $producto['id'],
-                        'nombre'     => $producto['nombre'],
-                        'sku'        => $producto['sku'],
-                        'precio'     => $producto['precio'],
-                        'imagen'     => $producto['imagen'],
-                        'material'   => $producto['material'],
-                        'cantidad'   => $cantidad
+                    $_SESSION['carrito'][$id] = [
+                        'nombre' => $nombre,
+                        'precio' => $precio,
+                        'cantidad' => $cantidad
                     ];
                 }
             }
         }
+
         header('Location: /proyecto_tejas/public/carrito/index');
         exit;
     }
 
-    // Quitar un item del carrito
-    public function eliminar(int $id): void {
-        if (isset($_SESSION['carrito'][$id])) {
+    // Ruta: /carrito/eliminar/{id}
+    public function eliminar($id = null) {
+        if ($id && isset($_SESSION['carrito'][$id])) {
             unset($_SESSION['carrito'][$id]);
         }
+
         header('Location: /proyecto_tejas/public/carrito/index');
         exit;
     }
 
-    // Vaciar todo el carrito
-    public function vaciar(): void {
+    // Ruta: /carrito/vaciar
+    public function vaciar() {
         $_SESSION['carrito'] = [];
+
         header('Location: /proyecto_tejas/public/carrito/index');
         exit;
     }

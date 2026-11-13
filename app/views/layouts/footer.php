@@ -44,6 +44,22 @@
         color: #e67e22;
     }
 
+    /* ESTILO DE BOTÓN TIPO ENLACE (Adiós al javascript:void en la esquina) */
+    .btn-link-footer {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #bdc3c7;
+        font-family: inherit;
+        font-size: 0.88rem;
+        cursor: pointer;
+        text-align: left;
+        transition: color 0.2s;
+    }
+    .btn-link-footer:hover {
+        color: #e67e22;
+    }
+
     /* SECCIÓN DE INTEGRANTES DEL EQUIPO */
     .team-section {
         max-width: 1200px;
@@ -187,7 +203,7 @@
                 <li><a href="/proyecto_tejas/public/catalogo/index">Catálogo de Productos</a></li>
                 <li><a href="/proyecto_tejas/public/auth/login">Iniciar Sesión</a></li>
                 <li><a href="/proyecto_tejas/public/auth/registro">Crear Cuenta</a></li>
-                <li><a href="javascript:void(0)" onclick="abrirModalDatos()">📋 Tratamiento de Datos</a></li>
+                <li><button type="button" class="btn-link-footer" onclick="abrirModalDatos()">📋 Tratamiento de Datos</button></li>
             </ul>
         </div>
 
@@ -200,47 +216,84 @@
         </div>
     </div>
 
-<!-- SECCIÓN DE EQUIPO / DESARROLLADORES -->
-<div class="team-section">
-    <h4>⭐ Desarrolladores del Proyecto</h4>
-    <div class="team-grid">
+    <!-- SECCIÓN DE EQUIPO / DESARROLLADORES -->
+    <div class="team-section">
+        <h4>⭐ Desarrolladores del Proyecto</h4>
+        <div class="team-grid">
 
-        <!-- Integrante 1: Juan Martinez -->
-        <div class="team-card">
-            <img src="/proyecto_tejas/public/img/equipo/juan.jpg" 
-                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Juan+Martinez&background=e67e22&color=fff';" 
-                 alt="Juan Martinez" 
-                 class="team-avatar">
-            <h5>Juan Martinez</h5>
-            <p>Desarrollador Lead</p>
+            <!-- Integrante 1: Juan Martinez -->
+            <div class="team-card">
+                <img src="/proyecto_tejas/public/img/equipo/juan.jpg" 
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Juan+Martinez&background=e67e22&color=fff';" 
+                     alt="Juan Martinez" 
+                     class="team-avatar">
+                <h5>Juan Martinez</h5>
+                <p>Desarrollador Lead</p>
+            </div>
+
+            <!-- Integrante 2: Harol Barbosa -->
+            <div class="team-card">
+                <img src="/proyecto_tejas/public/img/equipo/harol.jpg" 
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Harol+Barbosa&background=e67e22&color=fff';" 
+                     alt="Harol Barbosa" 
+                     class="team-avatar">
+                <h5>Harol Barbosa</h5>
+                <p>Ilustrador</p>
+            </div>
+
+            <!-- Integrante 3: Yilber Sanchez -->
+            <div class="team-card">
+                <img src="/proyecto_tejas/public/img/equipo/yilber.jpg" 
+                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Yilber+Sanchez&background=e67e22&color=fff';" 
+                     alt="Yilber Sanchez" 
+                     class="team-avatar">
+                <h5>Yilber Sanchez</h5>
+                <p>Apoyo emocional</p>
+            </div>
+
         </div>
-
-        <!-- Integrante 2: Harol Barbosa -->
-        <div class="team-card">
-            <img src="/proyecto_tejas/public/img/equipo/harol.jpg" 
-                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Harol+Barbosa&background=e67e22&color=fff';" 
-                 alt="Harol Barbosa" 
-                 class="team-avatar">
-            <h5>Harol Barbosa</h5>
-            <p>Ilustrador</p>
-        </div>
-
-        <!-- Integrante 3: Yilber Sanchez -->
-        <div class="team-card">
-            <img src="/proyecto_tejas/public/img/equipo/yilber.jpg" 
-                 onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Yilber+Sanchez&background=e67e22&color=fff';" 
-                 alt="Yilber Sanchez" 
-                 class="team-avatar">
-            <h5>Yilber Sanchez</h5>
-            <p>Apoyo emocional</p>
-        </div>
-
     </div>
-</div>
 
     <div class="footer-bottom">
-        <p>&copy; <?= date('Y') ?> Tejas & Cubiertas. Todos los derechos reservados. | <a href="javascript:void(0)" onclick="abrirModalDatos()" style="color: #bdc3c7; text-decoration: underline;">Política de datos</a></p>
-        <h7>Esta pagina fue creada con fines de practica Sena</h7>
+        <p>&copy; <?= date('Y') ?> Tejas & Cubiertas. Todos los derechos reservados. | <button type="button" class="btn-link-footer" style="text-decoration: underline; font-size: 0.85rem;" onclick="abrirModalDatos()">Política de datos</button></p>
+        <p style="margin-top: 6px; font-size: 0.8rem; color: #95a5a6;">Esta página fue creada con fines de práctica Sena</p>
     </div>
 
 </footer>
+
+<!-- MODAL POPUP DE TRATAMIENTO DE DATOS -->
+<div id="modalTratamientoDatos" class="modal-datos">
+    <div class="modal-contenido">
+        <button class="btn-cerrar-modal" onclick="cerrarModalDatos()">&times; Cerrar</button>
+        <h2>Política de Tratamiento de Datos Personales</h2>
+        
+        <p>En <strong>Tejas & Cubiertas</strong> garantizamos la protección y confidencialidad de la información recolectada de nuestros usuarios, clientes y proveedores, dando cumplimiento a las regulaciones de protección de datos personales.</p>
+
+        <h4>1. Datos de Clientes</h4>
+        <p>Los datos solicitados a los clientes serán utilizados exclusivamente para procesar, facturar y despachar los pedidos de tejas y materiales de cubierta.</p>
+
+        <h4>2. Datos de Proveedores</h4>
+        <p>La información recolectada de proveedores se destina a la gestión de órdenes de compra, trámites contables y pagos.</p>
+
+        <h4>3. Derechos del Titular</h4>
+        <p>Puede solicitar la actualización o cancelación de sus datos enviando un correo a <strong>contacto@tejasycubiertas.com</strong>.</p>
+    </div>
+</div>
+
+<!-- SCRIPT DEL MODAL -->
+<script>
+    function abrirModalDatos() {
+        document.getElementById('modalTratamientoDatos').style.display = 'block';
+    }
+
+    function cerrarModalDatos() {
+        document.getElementById('modalTratamientoDatos').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        var modal = document.getElementById('modalTratamientoDatos');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
