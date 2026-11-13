@@ -6,119 +6,46 @@ if (file_exists(__DIR__ . '/../layouts/header.php')) {
 }
 ?>
 
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        margin: 0;
-        padding: 0;
-    }
-    .seguimiento-card {
-        max-width: 950px;
-        margin: 40px auto;
-        background: #ffffff;
-        padding: 35px 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    }
-    .seguimiento-titulo {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #1a202c;
-        margin-bottom: 25px;
-    }
-    .seguimiento-tabla {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-    .seguimiento-tabla th {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #2d3748;
-        padding: 12px 10px;
-        border-bottom: 2px solid #edf2f7;
-    }
-    .seguimiento-tabla td {
-        font-size: 0.9rem;
-        color: #4a5568;
-        padding: 16px 10px;
-        border-bottom: 1px solid #edf2f7;
-        vertical-align: middle;
-    }
-    .badge-estado {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: capitalize;
-    }
-    .estado-pendiente { background-color: #fff3cd; color: #856404; }
-    .estado-enviado   { background-color: #cce5ff; color: #004085; }
-    .estado-entregado { background-color: #d4edda; color: #155724; }
-    .estado-cancelado { background-color: #f8d7da; color: #721c24; }
-    .sin-pedidos {
-        text-align: center;
-        color: #a0aec0;
-        padding: 30px 0;
-    }
-</style>
+<div style="max-width: 1000px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #e67e22; padding-bottom: 10px; margin-top: 0;">
+        📦 Estado y Seguimiento de Mis Pedidos
+    </h2>
 
-<div class="seguimiento-card">
-    <h1 class="seguimiento-titulo">Estado y Seguimiento de Mis Pedidos</h1>
-
-    <table class="seguimiento-tabla">
-        <thead>
-            <tr>
-                <th># Orden</th>
-                <th>Fecha</th>
-                <th>Total</th>
-                <th>Dirección</th>
-                <th>Estado de Envío</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($pedidos) && is_array($pedidos)): ?>
-                <?php foreach ($pedidos as $pedido): ?>
-                    <?php 
-                        $id = $pedido['id'] ?? 'N/A';
-                        $rawFecha = $pedido['created_at'] ?? $pedido['fecha'] ?? null;
-                        $fecha = $rawFecha ? date('d/m/Y', strtotime($rawFecha)) : 'Sin fecha';
-                        $total = isset($pedido['total']) ? '$' . number_format($pedido['total'], 2) : '$0.00';
-                        $direccion = $pedido['direccion_envio'] ?? $pedido['direccion'] ?? 'No registrada';
-                        $estadoRaw = strtolower($pedido['estado_pedido'] ?? $pedido['estado'] ?? 'pendiente');
-                        
-                        $claseBadge = 'estado-pendiente';
-                        if (in_array($estadoRaw, ['enviado', 'en camino'])) {
-                            $claseBadge = 'estado-enviado';
-                        } elseif (in_array($estadoRaw, ['entregado', 'completado'])) {
-                            $claseBadge = 'estado-entregado';
-                        } elseif ($estadoRaw === 'cancelado') {
-                            $claseBadge = 'estado-cancelado';
-                        }
-                    ?>
-                    <tr>
-                        <td><strong>#<?= htmlspecialchars($id) ?></strong></td>
-                        <td><?= htmlspecialchars($fecha) ?></td>
-                        <td><?= htmlspecialchars($total) ?></td>
-                        <td><?= htmlspecialchars($direccion) ?></td>
-                        <td>
-                            <span class="badge-estado <?= $claseBadge ?>">
-                                <?= htmlspecialchars(ucfirst($estadoRaw)) ?>
-                            </span>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="5" class="sin-pedidos">
-                        No tienes pedidos registrados en este momento.
+    <?php if (empty($pedidos)): ?>
+        <p style="text-align: center; color: #7f8c8d; padding: 40px 0; font-size: 1rem;">No tienes pedidos registrados en este momento.</p>
+        <div style="text-align: center;">
+            <a href="/proyecto_tejas/public/catalogo/index" style="background: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Ir al Catálogo</a>
+        </div>
+    <?php else: ?>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6; text-align: left;">
+                    <th style="padding: 12px; color: #2c3e50;"># Orden</th>
+                    <th style="padding: 12px; color: #2c3e50;">Fecha</th>
+                    <th style="padding: 12px; color: #2c3e50;">Total</th>
+                    <th style="padding: 12px; color: #2c3e50;">Dirección</th>
+                    <th style="padding: 12px; color: #2c3e50;">Método Pago</th>
+                    <th style="padding: 12px; color: #2c3e50;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($pedidos as $p): ?>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px; font-weight: bold; color: #e67e22;">#<?= htmlspecialchars($p['id']) ?></td>
+                    <td style="padding: 12px; color: #555;"><?= htmlspecialchars($p['created_at'] ?? 'N/A') ?></td>
+                    <td style="padding: 12px; color: #27ae60; font-weight: bold;">$<?= number_format((float)$p['total'], 2) ?></td>
+                    <td style="padding: 12px; color: #555;"><?= htmlspecialchars($p['direccion_envio']) ?></td>
+                    <td style="padding: 12px; color: #555;"><?= htmlspecialchars(strtoupper($p['metodo_pago'])) ?></td>
+                    <td style="padding: 12px;">
+                        <span style="background: #34495e; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: bold;">
+                            <?= htmlspecialchars(ucfirst($p['estado_pedido'])) ?>
+                        </span>
                     </td>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </div>
 
 <?php 

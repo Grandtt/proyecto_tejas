@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
 <style>
-    .catalogo-container { max-width: 1200px; margin: 0 auto; padding: 10px; }
+    .catalogo-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
     .catalogo-header { margin-bottom: 25px; text-align: center; }
     .catalogo-header h2 { color: #2c3e50; font-size: 2rem; margin-bottom: 10px; }
     
@@ -13,19 +13,109 @@
     .btn-filtrar { background: #3498db; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
     .btn-filtrar:hover { background: #2980b9; }
 
-    /* Grid de Productos */
-    .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-    .card-producto { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; }
-    .card-producto:hover { transform: translateY(-4px); }
-    .card-img { width: 100%; height: 180px; object-fit: cover; }
-    .card-body { padding: 15px; flex-grow: 1; }
-    .card-badge { background: #e8f4fd; color: #2980b9; font-size: 0.8rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
-    .card-title { font-size: 1.1rem; color: #2c3e50; margin: 0 0 8px 0; }
-    .card-price { font-size: 1.3rem; font-weight: bold; color: #27ae60; margin-bottom: 10px; }
-    .card-info { font-size: 0.85rem; color: #666; margin-bottom: 5px; }
-    .card-footer { padding: 15px; background: #fafafa; border-top: 1px solid #eee; text-align: center; }
-    .btn-detalle { background: #2c3e50; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 0.9rem; display: block; text-align: center; }
-    .btn-detalle:hover { background: #1a252f; }
+    /* Grid de Productos - Estructura limpia en tarjetas */
+    .grid-productos { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+        gap: 25px; 
+    }
+    .card-producto { 
+        background: #fff; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        border: 1px solid #eaeaea;
+    }
+    .card-img { 
+        width: 100%; 
+        height: 180px; 
+        object-fit: cover; 
+        background: #f9f9f9;
+    }
+    .card-body { 
+        padding: 15px; 
+        flex-grow: 1; 
+    }
+    .card-badge { 
+        background: #e8f4fd; 
+        color: #2980b9; 
+        font-size: 0.8rem; 
+        font-weight: bold; 
+        padding: 4px 8px; 
+        border-radius: 4px; 
+        display: inline-block; 
+        margin-bottom: 8px; 
+    }
+    .card-title { 
+        font-size: 1.1rem; 
+        color: #2c3e50; 
+        margin: 0 0 8px 0; 
+    }
+    .card-price { 
+        font-size: 1.3rem; 
+        font-weight: bold; 
+        color: #27ae60; 
+        margin-bottom: 10px; 
+    }
+    .card-info { 
+        font-size: 0.85rem; 
+        color: #666; 
+        margin-bottom: 5px; 
+    }
+    
+    /* Pie de tarjeta organizado verticalmente */
+    .card-footer { 
+        padding: 15px; 
+        background: #fafafa; 
+        border-top: 1px solid #eee; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+    }
+    .form-agregar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    .input-cantidad {
+        width: 60px;
+        padding: 6px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .btn-agregar {
+        background: #e67e22;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.9rem;
+        flex-grow: 1;
+    }
+    .btn-agregar:hover {
+        background: #d35400;
+    }
+    .btn-detalle { 
+        background: #2c3e50; 
+        color: #fff; 
+        text-decoration: none; 
+        padding: 8px 15px; 
+        border-radius: 4px; 
+        font-size: 0.9rem; 
+        display: block; 
+        text-align: center; 
+    }
+    .btn-detalle:hover { 
+        background: #1a252f; 
+    }
 </style>
 
 <div class="catalogo-container">
@@ -64,13 +154,13 @@
         </form>
     </div>
 
-    <!-- Lista de Productos -->
+    <!-- Lista de Productos en Tarjetas Ordenadas -->
     <div class="grid-productos">
         <?php if (!empty($productos)): ?>
             <?php foreach ($productos as $prod): ?>
                 <div class="card-producto">
-                    <div>
-                        <img src="/proyecto_tejas/public/uploads/<?= htmlspecialchars($prod['imagen']) ?>" class="card-img" alt="Teja" onerror="this.src='https://via.placeholder.com/300x180?text=Teja'">
+                    <div class="card-content-wrapper">
+                        <img src="/proyecto_tejas/public/uploads/<?= htmlspecialchars($prod['imagen'] ?? '') ?>" class="card-img" alt="Teja" onerror="this.src='https://via.placeholder.com/300x180?text=Teja'">
                         <div class="card-body">
                             <span class="card-badge"><?= htmlspecialchars($prod['categoria_nombre'] ?? 'Teja') ?></span>
                             <h3 class="card-title"><?= htmlspecialchars($prod['nombre']) ?></h3>
@@ -79,8 +169,22 @@
                             <div class="card-info"><strong>Stock:</strong> <?= $prod['stock'] ?> unidades</div>
                         </div>
                     </div>
+
+                    <!-- Pie de Tarjeta con el Formulario del Carrito Integrado -->
                     <div class="card-footer">
-                        <a href="/proyecto_tejas/public/catalogo/detalle/<?= $prod['id'] ?>" class="btn-detalle">Ver Ficha Técnica / Detalle</a>
+                        <form action="/proyecto_tejas/public/carrito/agregar" method="POST" class="form-agregar">
+                            <input type="hidden" name="id_producto" value="<?= $prod['id'] ?>">
+                            <input type="hidden" name="nombre" value="<?= htmlspecialchars($prod['nombre']) ?>">
+                            <input type="hidden" name="precio" value="<?= $prod['precio'] ?>">
+                            
+                            <input type="number" name="cantidad" value="1" min="1" max="<?= $prod['stock'] ?>" class="input-cantidad">
+                            
+                            <button type="submit" class="btn-agregar">
+                                🛒 Añadir
+                            </button>
+                        </form>
+
+                        <a href="/proyecto_tejas/public/catalogo/detalle/<?= $prod['id'] ?>" class="btn-detalle">Ver Ficha Técnica</a>
                     </div>
                 </div>
             <?php endforeach; ?>

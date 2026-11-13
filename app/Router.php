@@ -8,14 +8,14 @@ class Router {
         $url = filter_var(rtrim($url, '/'), FILTER_SANITIZE_URL);
         $segments = explode('/', $url);
 
-        // 1. Mapear Nombre del Controlador (ej: 'cliente' -> 'ClienteController')
+        // 1. Mapear Nombre del Controlador (ej: 'carrito' -> 'CarritoController')
         $controllerName = !empty($segments[0]) ? ucfirst($segments[0]) . 'Controller' : 'HomeController';
         $controllerClass = "App\\Controllers\\" . $controllerName;
 
-        // 2. Mapear Nombre del Método (ej: 'index', 'crear', 'editar', 'eliminar')
+        // 2. Mapear Nombre del Método (ej: 'index', 'agregar', 'eliminar')
         $method = $segments[1] ?? 'index';
 
-        // 3. Capturar Parámetros adicionales
+        // 3. Capturar Parámetros adicionales (como el ID del producto)
         $params = array_slice($segments, 2);
 
         // 4. Despachar la petición si la clase y el método existen

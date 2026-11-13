@@ -11,7 +11,7 @@ class Producto {
         $this->db = Database::getInstance();
     }
 
-    // Obtener todos los productos con el nombre de su categoría
+    
     public function obtenerTodos(): array {
         $sql = "SELECT p.*, c.nombre AS categoria_nombre 
                 FROM productos p 
@@ -132,6 +132,6 @@ class Producto {
     }
 }
 
-// Método a incorporar dentro de la clase App\Models\Producto
+
 
 

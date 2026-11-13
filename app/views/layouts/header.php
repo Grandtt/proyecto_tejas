@@ -81,6 +81,12 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
                                 🚚 Gestionar Proveedores
                             </a>
                         </li>
+                        <li> 
+                            <a href="/proyecto_tejas/public/pedido/index" class="btn-admin-proveedores">
+                                📝 Gestionar Pedidos
+                            </a>
+                        </li>
+                        
                     <?php endif; ?>
 
                     <li><span class="user-badge">👤 <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Usuario') ?></span></li>

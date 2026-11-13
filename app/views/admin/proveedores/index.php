@@ -1,5 +1,5 @@
 <?php
-// Cargar encabezado si existe
+
 if (file_exists(__DIR__ . '/../../layouts/header.php')) {
     include_once __DIR__ . '/../../layouts/header.php';
 }
