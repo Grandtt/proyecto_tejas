@@ -11,13 +11,51 @@ class Producto {
         $this->db = Database::getInstance();
     }
 
-    // Obtener todos los productos con el nombre de su categoría
+    // Obtener todos los productos (se mantiene por compatibilidad)
     public function obtenerTodos(): array {
         $sql = "SELECT p.*, c.nombre AS categoria_nombre 
                 FROM productos p 
                 INNER JOIN categorias c ON p.categoria_id = c.id 
                 ORDER BY p.id DESC";
         return $this->db->query($sql)->fetchAll();
+    }
+
+    // Obtener solo los productos ACTIVOS (para la administración principal y el catálogo)
+    public function obtenerActivos(): array {
+        $sql = "SELECT p.*, c.nombre AS categoria_nombre 
+                FROM productos p 
+                LEFT JOIN categorias c ON p.categoria_id = c.id 
+                WHERE p.estado = 'activo' 
+                ORDER BY p.id DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Obtener productos en BORRADOR o AGOTADOS (para la papelera / gestión de inactivos)
+    public function obtenerBorradores(): array {
+        $sql = "SELECT p.*, c.nombre AS categoria_nombre 
+                FROM productos p 
+                LEFT JOIN categorias c ON p.categoria_id = c.id 
+                WHERE p.estado IN ('borrador', 'agotado') 
+                ORDER BY p.id DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Obtener productos con stock crítico (para las alertas del panel de administración)
+    public function obtenerStockBajo(int $limite = 5): array {
+        $stmt = $this->db->prepare("SELECT * FROM productos WHERE stock <= :limite AND estado = 'activo'");
+        $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Cambiar estado dinámicamente ('activo', 'borrador', 'agotado')
+    public function cambiarEstado(int $id, string $estado): bool {
+        $stmt = $this->db->prepare("UPDATE productos SET estado = :estado WHERE id = :id");
+        return $stmt->execute([':estado' => $estado, ':id' => $id]);
     }
 
     // Obtener un producto por su ID
@@ -30,23 +68,23 @@ class Producto {
 
     // Crear un nuevo producto (Create)
     public function crear(array $datos): bool {
-        $sql = "INSERT INTO productos (categoria_id, sku, nombre, descripcion, precio, stock, material, resistencia, dimensiones, peso_kg, rendimiento_m2, imagen) 
-                VALUES (:categoria_id, :sku, :nombre, :descripcion, :precio, :stock, :material, :resistencia, :dimensiones, :peso_kg, :rendimiento_m2, :imagen)";
+        $sql = "INSERT INTO productos (categoria_id, sku, nombre, descripcion, precio, stock, material, resistencia, dimensiones, peso_kg, rendimiento_m2, imagen, estado) 
+                VALUES (:categoria_id, :sku, :nombre, :descripcion, :precio, :stock, :material, :resistencia, :dimensiones, :peso_kg, :rendimiento_m2, :imagen, 'activo')";
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ':categoria_id'  => (int)$datos['categoria_id'],
-            ':sku'           => $datos['sku'],
-            ':nombre'        => $datos['nombre'],
-            ':descripcion'   => $datos['descripcion'] ?? null,
-            ':precio'        => (float)$datos['precio'],
-            ':stock'         => (int)$datos['stock'],
-            ':material'      => $datos['material'],
-            ':resistencia'   => $datos['resistencia'] ?? null,
-            ':dimensiones'   => $datos['dimensiones'] ?? null,
-            ':peso_kg'       => !empty($datos['peso_kg']) ? (float)$datos['peso_kg'] : null,
-            ':rendimiento_m2'=> !empty($datos['rendimiento_m2']) ? (float)$datos['rendimiento_m2'] : null,
-            ':imagen'        => $datos['imagen'] ?? 'default.jpg'
+            ':categoria_id'   => (int)$datos['categoria_id'],
+            ':sku'            => $datos['sku'],
+            ':nombre'         => $datos['nombre'],
+            ':descripcion'    => $datos['descripcion'] ?? null,
+            ':precio'         => (float)$datos['precio'],
+            ':stock'          => (int)$datos['stock'],
+            ':material'       => $datos['material'],
+            ':resistencia'    => $datos['resistencia'] ?? null,
+            ':dimensiones'    => $datos['dimensiones'] ?? null,
+            ':peso_kg'        => !empty($datos['peso_kg']) ? (float)$datos['peso_kg'] : null,
+            ':rendimiento_m2' => !empty($datos['rendimiento_m2']) ? (float)$datos['rendimiento_m2'] : null,
+            ':imagen'         => $datos['imagen'] ?? 'default.jpg'
         ]);
     }
 
@@ -68,17 +106,17 @@ class Producto {
                 WHERE id = :id";
 
         $params = [
-            ':categoria_id'  => (int)$datos['categoria_id'],
-            ':sku'           => $datos['sku'],
-            ':nombre'        => $datos['nombre'],
-            ':descripcion'   => $datos['descripcion'] ?? null,
-            ':precio'        => (float)$datos['precio'],
-            ':stock'         => (int)$datos['stock'],
-            ':material'      => $datos['material'],
-            ':resistencia'   => $datos['resistencia'] ?? null,
-            ':dimensiones'   => $datos['dimensiones'] ?? null,
-            ':peso_kg'       => !empty($datos['peso_kg']) ? (float)$datos['peso_kg'] : null,
-            ':rendimiento_m2'=> !empty($datos['rendimiento_m2']) ? (float)$datos['rendimiento_m2'] : null,
+            ':categoria_id'   => (int)$datos['categoria_id'],
+            ':sku'            => $datos['sku'],
+            ':nombre'         => $datos['nombre'],
+            ':descripcion'    => $datos['descripcion'] ?? null,
+            ':precio'         => (float)$datos['precio'],
+            ':stock'          => (int)$datos['stock'],
+            ':material'       => $datos['material'],
+            ':resistencia'    => $datos['resistencia'] ?? null,
+            ':dimensiones'    => $datos['dimensiones'] ?? null,
+            ':peso_kg'        => !empty($datos['peso_kg']) ? (float)$datos['peso_kg'] : null,
+            ':rendimiento_m2' => !empty($datos['rendimiento_m2']) ? (float)$datos['rendimiento_m2'] : null,
             ':id'             => $id
         ];
 
@@ -90,7 +128,7 @@ class Producto {
         return $stmt->execute($params);
     }
 
-    // Eliminar un producto (Delete)
+    // Eliminar un producto (Delete permanente)
     public function eliminar(int $id): bool {
         $stmt = $this->db->prepare("DELETE FROM productos WHERE id = :id");
         return $stmt->execute([':id' => $id]);
@@ -100,12 +138,13 @@ class Producto {
     public function obtenerCategorias(): array {
         return $this->db->query("SELECT * FROM categorias")->fetchAll();
     }
-// Obtener productos aplicando filtros opcionales (Material, Categoría, Precio)
+
+    // Obtener productos aplicando filtros opcionales (Material, Categoría, Precio)
     public function obtenerConFiltros(?string $material = null, ?int $categoria_id = null, ?float $precio_max = null): array {
         $sql = "SELECT p.*, c.nombre AS categoria_nombre 
                 FROM productos p 
                 INNER JOIN categorias c ON p.categoria_id = c.id 
-                WHERE 1=1";
+                WHERE p.estado = 'activo'";
         
         $params = [];
 
@@ -131,7 +170,3 @@ class Producto {
         return $stmt->fetchAll();
     }
 }
-
-// Método a incorporar dentro de la clase App\Models\Producto
-
-

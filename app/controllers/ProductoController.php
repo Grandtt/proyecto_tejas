@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\Producto;
 use App\Middleware\AuthMiddleware;
+use PDOException;
 
 class ProductoController {
     private Producto $productoModel;
@@ -13,10 +14,35 @@ class ProductoController {
         $this->productoModel = new Producto();
     }
 
-    // Listar productos (READ)
+    // Listar productos activos (READ) con alerta de stock bajo
     public function index(): void {
-        $productos = $this->productoModel->obtenerTodos();
+        $productos = $this->productoModel->obtenerActivos();
+        $alertasStock = $this->productoModel->obtenerStockBajo(5); // Productos con 5 o menos unidades
         require_once __DIR__ . '/../views/admin/productos/index.php';
+    }
+
+    // Vista de Productos en Borrador o Agotados (Soft Delete)
+    public function borradores(): void {
+        $borradores = $this->productoModel->obtenerBorradores();
+        require_once __DIR__ . '/../views/admin/productos/borradores.php';
+    }
+
+    // Enviar producto a borrador (Archivar) mediante ruta limpia
+    public function enviarBorrador(int $id): void {
+        if ($id > 0) {
+            $this->productoModel->cambiarEstado($id, 'borrador');
+        }
+        header('Location: /proyecto_tejas/public/producto/index?msg=borrador_exito');
+        exit;
+    }
+
+    // Restaurar producto al catálogo activo mediante ruta limpia
+    public function restaurar(int $id): void {
+        if ($id > 0) {
+            $this->productoModel->cambiarEstado($id, 'activo');
+        }
+        header('Location: /proyecto_tejas/public/producto/borradores?msg=restaurado_exito');
+        exit;
     }
 
     // Formulario y lógica de creación (CREATE)
@@ -72,17 +98,26 @@ class ProductoController {
         require_once __DIR__ . '/../views/admin/productos/editar.php';
     }
 
-    // Alias para la ruta /producto/actualizar/$id
+    // Alias para la ruta /proyecto_tejas/public/producto/actualizar/$id
     public function actualizar(int $id): void {
         $this->editar($id);
     }
 
-    // Eliminar producto (DELETE)
+    // 🛡️ Eliminar producto permanentemente (DELETE) adaptado al Snapshot histórico
     public function eliminar(int $id): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->productoModel->eliminar($id);
+            try {
+                // Al tener configurado el SET NULL y el Snapshot, el borrado es seguro
+                $this->productoModel->eliminar($id);
+                header('Location: /proyecto_tejas/public/producto/index?msg=eliminado');
+                exit;
+            } catch (PDOException $e) {
+                // Captura general de errores de base de datos por si ocurre cualquier eventualidad
+                header('Location: /proyecto_tejas/public/producto/index?msg=error');
+                exit;
+            }
         }
-        header('Location: /proyecto_tejas/public/producto/index?msg=eliminado');
+        header('Location: /proyecto_tejas/public/producto/index');
         exit;
     }
 

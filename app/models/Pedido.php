@@ -33,36 +33,46 @@ class Pedido {
                 throw new Exception("No se pudo generar el ID del pedido.");
             }
 
-            $sqlDetalle = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, precio_unitario) 
-                           VALUES (:pedido_id, :producto_id, :cantidad, :precio_unitario)";
+            // 📸 Consulta de inserción adaptada para guardar el Snapshot histórico
+            $sqlDetalle = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, nombre_producto, sku_producto, precio_unitario) 
+                           VALUES (:pedido_id, :producto_id, :cantidad, :nombre_producto, :sku_producto, :precio_unitario)";
             $stmtDetalle = $this->db->prepare($sqlDetalle);
 
-            // CORRECCIÓN: Usar parámetros únicos (:cant_restar y :cant_validar) para evitar el error HY093
-            $sqlStock = "UPDATE productos SET stock = stock - :cant_restar WHERE id = :producto_id AND stock >= :cant_validar";
+            $sqlStock = "UPDATE productos 
+                         SET stock = stock - :cant_restar,
+                             estado = CASE WHEN (stock - :cant_validar_estado) <= 0 THEN 'agotado' ELSE estado END
+                         WHERE id = :producto_id AND stock >= :cant_validar_stock";
             $stmtStock = $this->db->prepare($sqlStock);
 
-            foreach ($items as $key => $item) {
-                $producto_id = $item['id'] ?? $key;
+            foreach ($items as $item) {
+                $producto_id = (int)($item['producto_id'] ?? 0);
                 $cantidad = (int)($item['cantidad'] ?? 1);
-                $precio = (float)($item['precio'] ?? 0);
+                
+                // Recoger los datos del snapshot enviados desde el controlador
+                $nombre_producto = $item['nombre_producto'] ?? 'Producto';
+                $sku_producto    = $item['sku_producto'] ?? 'N/A';
+                $precio_unitario = (float)($item['precio_unitario'] ?? $item['precio'] ?? 0);
 
                 if ($producto_id <= 0) {
                     throw new Exception("ID de producto inválido en el carrito.");
                 }
 
-                // Insertar detalle del pedido
+                // Insertar detalle con la fotografía histórica
                 $stmtDetalle->execute([
                     ':pedido_id'       => $pedido_id,
                     ':producto_id'     => $producto_id,
                     ':cantidad'        => $cantidad,
-                    ':precio_unitario' => $precio
+                    ':nombre_producto' => $nombre_producto,
+                    ':sku_producto'    => $sku_producto,
+                    ':precio_unitario' => $precio_unitario
                 ]);
 
-                // Descontar stock con parámetros únicos
+                // Descontar stock y actualizar estado con parámetros únicos
                 $stmtStock->execute([
-                    ':cant_restar'   => $cantidad,
-                    ':producto_id'   => $producto_id,
-                    ':cant_validar'  => $cantidad
+                    ':cant_restar'         => $cantidad,
+                    ':cant_validar_estado' => $cantidad,
+                    ':producto_id'         => $producto_id,
+                    ':cant_validar_stock'  => $cantidad
                 ]);
 
                 if ($stmtStock->rowCount() === 0) {
@@ -103,10 +113,15 @@ class Pedido {
 
         if (!$pedido) return null;
 
+        // 🛡️ Consulta protegida con LEFT JOIN y COALESCE para preservar el historial ante borrados
         $stmtItems = $this->db->prepare("
-            SELECT dp.*, pr.nombre AS producto_nombre, pr.sku, pr.material 
+            SELECT 
+                dp.*, 
+                COALESCE(dp.nombre_producto, pr.nombre, 'Producto Eliminado') AS producto_nombre, 
+                COALESCE(dp.sku_producto, pr.sku, 'N/A') AS sku, 
+                pr.material 
             FROM detalle_pedidos dp 
-            INNER JOIN productos pr ON dp.producto_id = pr.id 
+            LEFT JOIN productos pr ON dp.producto_id = pr.id 
             WHERE dp.pedido_id = :pedido_id
         ");
         $stmtItems->execute([':pedido_id' => $pedido_id]);
@@ -116,9 +131,14 @@ class Pedido {
     }
 
     public function obtenerTodos(): array {
-        $sql = "SELECT p.*, u.nombre, u.apellido 
+        // 📦 Consulta optimizada con GROUP_CONCAT para agrupar los productos y cantidades de cada pedido
+        $sql = "SELECT p.*, u.nombre, u.apellido,
+                GROUP_CONCAT(CONCAT(dp.cantidad, 'x ', COALESCE(dp.nombre_producto, pr.nombre, 'Producto Eliminado')) SEPARATOR '<br>') AS productos_resumen
                 FROM pedidos p 
                 INNER JOIN usuarios u ON p.usuario_id = u.id 
+                LEFT JOIN detalle_pedidos dp ON p.id = dp.pedido_id
+                LEFT JOIN productos pr ON dp.producto_id = pr.id
+                GROUP BY p.id
                 ORDER BY p.id DESC";
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }

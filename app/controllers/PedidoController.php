@@ -2,13 +2,16 @@
 namespace App\Controllers;
 
 use App\Models\Pedido;
+use App\Models\Producto;
 use Exception;
 
 class PedidoController {
     private Pedido $pedidoModel;
+    private Producto $productoModel;
 
     public function __construct() {
         $this->pedidoModel = new Pedido();
+        $this->productoModel = new Producto();
     }
 
     // Método por defecto para que /pedido o /pedido/index funcione correctamente
@@ -60,19 +63,50 @@ class PedidoController {
                 exit;
             }
 
-            // Recoger los datos enviados desde el formulario de checkout
-            $direccion = $_POST['direccion_entrega'] ?? 'Sin dirección';
+            // Recoger los datos del formulario aceptando múltiples nombres posibles para los inputs
+            $direccion = $_POST['direccion_entrega'] ?? $_POST['direccion_envio'] ?? $_POST['direccion'] ?? 'Sin dirección';
             $metodo_pago = $_POST['metodo_pago'] ?? 'Contra entrega';
 
-            // Calcular el total del pedido
+            // 📸 Construir el carrito enriquecido con el Snapshot (fotografía histórica del producto)
             $total = 0;
-            foreach ($carrito as $item) {
-                $total += (float)$item['precio'] * (int)$item['cantidad'];
+            $carritoEnriquecido = [];
+
+            foreach ($carrito as $key => $item) {
+                // Identificar el ID del producto de forma robusta (clave del array, producto_id o id)
+                $producto_id = (int)($item['producto_id'] ?? $item['id'] ?? $key ?? 0);
+                $cantidad = (int)($item['cantidad'] ?? 1);
+
+                // Obtener los datos actuales del producto desde la base de datos (si el ID es válido)
+                $productoActual = $producto_id > 0 ? $this->productoModel->obtenerPorId($producto_id) : null;
+
+                // Respaldar datos actuales o usar los que ya traía el carrito como respaldo
+                $nombre = $productoActual['nombre'] ?? $item['nombre'] ?? $item['nombre_producto'] ?? 'Producto';
+                $sku = $productoActual['sku'] ?? $item['sku'] ?? $item['sku_producto'] ?? 'N/A';
+                $precioUnitario = (float)($productoActual['precio'] ?? $item['precio'] ?? $item['precio_unitario'] ?? 0);
+
+                if ($producto_id > 0 || $precioUnitario > 0) {
+                    $total += $precioUnitario * $cantidad;
+
+                    // Guardamos tanto los datos relacionales como el respaldo histórico (Snapshot)
+                    $carritoEnriquecido[] = [
+                        'producto_id'     => $producto_id > 0 ? $producto_id : 1,
+                        'cantidad'        => $cantidad,
+                        'precio'          => $precioUnitario,
+                        'nombre_producto' => $nombre,
+                        'sku_producto'    => $sku,
+                        'precio_unitario' => $precioUnitario
+                    ];
+                }
+            }
+
+            if (empty($carritoEnriquecido)) {
+                header('Location: /proyecto_tejas/public/carrito/index?msg=error_carrito');
+                exit;
             }
 
             try {
-                // Intentar registrar el pedido y descontar stock
-                $pedido_id = $this->pedidoModel->registrarPedido($usuario_id, $carrito, $total, $direccion, $metodo_pago);
+                // Intentar registrar el pedido con el carrito enriquecido y descontar stock
+                $pedido_id = $this->pedidoModel->registrarPedido($usuario_id, $carritoEnriquecido, $total, $direccion, $metodo_pago);
 
                 if ($pedido_id) {
                     // Vaciar el carrito de la sesión si se guardó con éxito

@@ -248,7 +248,7 @@
                      alt="Yilber Sanchez" 
                      class="team-avatar">
                 <h5>Yilber Sanchez</h5>
-                <p>Apoyo emocional</p>
+                <p>Desarrollador</p>
             </div>
 
         </div>
