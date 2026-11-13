@@ -38,10 +38,19 @@ class Pedido {
                            VALUES (:pedido_id, :producto_id, :cantidad, :nombre_producto, :sku_producto, :precio_unitario)";
             $stmtDetalle = $this->db->prepare($sqlDetalle);
 
+<<<<<<< HEAD
             $sqlStock = "UPDATE productos 
                          SET stock = stock - :cant_restar,
                              estado = CASE WHEN (stock - :cant_validar_estado) <= 0 THEN 'agotado' ELSE estado END
                          WHERE id = :producto_id AND stock >= :cant_validar_stock";
+=======
+<<<<<<< HEAD
+            
+=======
+            // CORRECCIÓN: Usar parámetros únicos (:cant_restar y :cant_validar) para evitar el error HY093
+>>>>>>> c98ba225824aea18ac062548418d245d2fdfdc7b
+            $sqlStock = "UPDATE productos SET stock = stock - :cant_restar WHERE id = :producto_id AND stock >= :cant_validar";
+>>>>>>> fd5bcdf72fb1a855f9e1e9abc9143d3d656707a7
             $stmtStock = $this->db->prepare($sqlStock);
 
             foreach ($items as $item) {

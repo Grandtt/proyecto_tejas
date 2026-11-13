@@ -11,7 +11,11 @@ class Producto {
         $this->db = Database::getInstance();
     }
 
+<<<<<<< HEAD
     // Obtener todos los productos (se mantiene por compatibilidad)
+=======
+    
+>>>>>>> fd5bcdf72fb1a855f9e1e9abc9143d3d656707a7
     public function obtenerTodos(): array {
         $sql = "SELECT p.*, c.nombre AS categoria_nombre 
                 FROM productos p 
@@ -170,3 +174,10 @@ class Producto {
         return $stmt->fetchAll();
     }
 }
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> fd5bcdf72fb1a855f9e1e9abc9143d3d656707a7

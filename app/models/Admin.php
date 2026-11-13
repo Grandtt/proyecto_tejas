@@ -1,5 +1,4 @@
 <?php
-// app/models/AdminModel.php (o el modelo administrativo que uses)
 
 class AdminModel {
     private $db;

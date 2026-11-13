@@ -42,7 +42,7 @@ class AdminController {
         $totalClientes = 0;
         $tableUsers = $db->query("SHOW TABLES LIKE 'usuarios'")->rowCount() > 0;
         if ($tableUsers) {
-            // Intentamos contar con el rol de cliente, si no existe el campo role_id cuenta todos los usuarios
+            
             try {
                 $totalClientes = (int) $db->query("SELECT COUNT(*) FROM usuarios WHERE role_id = 2")->fetchColumn();
             } catch (\Exception $e) {
@@ -66,7 +66,7 @@ class AdminController {
                 $totalPedidos = (int) $db->query("SELECT COUNT(*) FROM pedidos")->fetchColumn();
             }
 
-            // Consultar las últimas transacciones de forma adaptable a tus columnas
+            // Consultar las últimas transacciones
             try {
                 $stmtUltimas = $db->query("
                     SELECT p.id, 
@@ -84,7 +84,7 @@ class AdminController {
             }
         }
 
-        // Cargamos la vista del dashboard
+        // Carga de la vista del dashboard
         require_once __DIR__ . '/../views/admin/dashboard/index.php';
     }
 }
