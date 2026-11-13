@@ -5,6 +5,15 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Validar si el usuario logueado es Administrador según AuthController (usuario_role_id === 1)
 $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_id'] === 1;
+
+// Calcular el total de productos en el carrito de compras
+$cantidadCarrito = 0;
+if (isset($_SESSION['carrito']) && is_array($_SESSION['carrito'])) {
+    foreach ($_SESSION['carrito'] as $item) {
+        // Suma la cantidad de cada producto (soporta estructura con clave 'cantidad' o por defecto 1)
+        $cantidadCarrito += isset($item['cantidad']) ? (int)$item['cantidad'] : 1;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,6 +35,24 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
         .nav-menu li { display: flex; align-items: center; }
         .nav-menu a { color: #ecf0f1; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; white-space: nowrap; display: inline-block; }
         .nav-menu a:hover { color: #e67e22; }
+        
+        /* Estilos específicos para el enlace y el badge flotante del carrito */
+        .nav-carrito-container { position: relative; display: inline-flex; align-items: center; }
+        .nav-carrito-link { display: flex; align-items: center; gap: 6px; background-color: #34495e; padding: 6px 12px; border-radius: 4px; color: #ecf0f1 !important; font-weight: bold; transition: background-color 0.2s; }
+        .nav-carrito-link:hover { background-color: #e67e22; color: white !important; }
+        
+        .badge-carrito {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
         
         .user-badge { background: #34495e; padding: 6px 12px; border-radius: 15px; font-size: 0.85rem; color: #f1c40f; white-space: nowrap; }
         
@@ -55,6 +82,18 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
         <nav>
             <ul class="nav-menu">
                 <li><a href="/proyecto_tejas/public/catalogo/index">Catálogo</a></li>
+
+                <!-- Enlace visible del Carrito con ícono y contador dinámico -->
+                <li>
+                    <div class="nav-carrito-container">
+                        <a href="/proyecto_tejas/public/carrito/index" class="nav-carrito-link" title="Ver Carrito de Compras">
+                            🛒 Carrito
+                            <?php if ($cantidadCarrito > 0): ?>
+                                <span class="badge-carrito"><?php echo $cantidadCarrito; ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </div>
+                </li>
 
                 <?php if (isset($_SESSION['usuario_id'])): ?>
                     <li><a href="/proyecto_tejas/public/pedido/misPedidos">📦 Mis Pedidos</a></li>
@@ -99,4 +138,5 @@ $esAdmin = isset($_SESSION['usuario_role_id']) && (int)$_SESSION['usuario_role_i
             </ul>
         </nav>
     </div>
+</header>
 </header>

@@ -71,7 +71,11 @@ class PedidoController {
             }
 
             try {
+<<<<<<< HEAD
                 //registrar el pedido y descontar stock
+=======
+                // Intentar registrar el pedido y descontar stock
+>>>>>>> c98ba225824aea18ac062548418d245d2fdfdc7b
                 $pedido_id = $this->pedidoModel->registrarPedido($usuario_id, $carrito, $total, $direccion, $metodo_pago);
 
                 if ($pedido_id) {
@@ -96,7 +100,11 @@ class PedidoController {
             }
         }
 
+<<<<<<< HEAD
         //la vista de pago/checkout
+=======
+        // Si entra por GET, muestra la vista de pago/checkout
+>>>>>>> c98ba225824aea18ac062548418d245d2fdfdc7b
         require_once __DIR__ . '/../views/carrito/checkout.php';
     }
 
